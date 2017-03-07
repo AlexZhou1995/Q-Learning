@@ -34,21 +34,63 @@ class GridWord(object):
 		else:
 			print ('action error')
 
-		a_set={1,2,3,4}
-		if self.pos[0]==0:
-			a_set.remove(1)
-		if self.pos[0]==self.x-1:
-			a_set.remove(2)
-		if self.pos[1]==0:
-			a_set.remove(3)
-		if self.pos[1]==self.y-1:
-			a_set.remove(4)
+		a_set = self.getActSet_wall(self.pos)
 
 		end = False
 		if list(self.pos)==[self.x-1,self.y-1]:
 			end=True
 
 		return self.pos.copy(), self.board[self.pos[0]][self.pos[1]], a_set, end
+
+	def getActSet_normal(self,pos):
+		a_set={1,2,3,4}
+		if pos[0]==0:
+			a_set.remove(1)
+		if pos[0]==self.x-1:
+			a_set.remove(2)
+		if pos[1]==0:
+			a_set.remove(3)
+		if pos[1]==self.y-1:
+			a_set.remove(4)
+		return a_set
+
+	def getActSet_wall(self,pos):
+		a_set={1,2,3,4}
+		if pos[0]==0:
+			a_set.remove(1)
+		if pos[0]==self.x-1:
+			a_set.remove(2)
+		if pos[1]==0:
+			a_set.remove(3)
+		if pos[1]==self.y-1:
+			a_set.remove(4)
+		
+		if pos[0]==8:
+			if pos[1]==2 or pos[1]==10:
+				pass
+			else:
+				if 1 in a_set:
+					a_set.remove(1)
+		if pos[0]==6:
+			if pos[1]==2 or pos[1]==10:
+				pass
+			else:
+				if 2 in a_set:
+					a_set.remove(2)
+		if pos[1]==7:
+			if pos[0]==3 or pos[0]==11:
+				pass
+			else:
+				if 3 in a_set:
+					a_set.remove(3)
+		if pos[1]==5:
+			if pos[0]==3 or pos[0]==11:
+				pass
+			else:
+				if 4 in a_set:
+					a_set.remove(4)
+		return a_set
+
 
 class Agent(object):
 	def __init__(self, env, gamma=0.9, ep_start=1.0, ep_end=0.01, t_ep_end=100,t_learn_start=5):
@@ -69,6 +111,7 @@ class Agent(object):
 			ep = 0.99
 			#1.chooseAction
 			action = self.chooseAct(state, ep, action_set)
+			
 			#2.act
 			state_next,reward,action_set,end = self.env.step(action)
 			#3.observe
@@ -126,9 +169,9 @@ class Agent(object):
 		print(self.Q)
 
 if __name__ == '__main__':
-	env = GridWord(5,5,100)
+	env = GridWord(13,12,200)
 	angent = Agent(env)
-	angent.train(10000)
+	angent.train(30000)
 	angent.printQ()
 	angent.play()
 
